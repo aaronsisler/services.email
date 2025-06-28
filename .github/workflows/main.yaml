@@ -1,0 +1,58 @@
+name: Pull Request
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Publish-Lambda-To-Cloud:
+    name: Deploy Lambda To Cloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.x
+
+      - name: Display Go version
+        run: go version
+
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+
+      # - name: Build handlers
+      #   run: make build
+
+      # - name: Zip handlers
+      #   run: make zip
+
+      # - name: Create Folder uuid
+      #   run: echo "UUID=$(uuidgen)" >> $GITHUB_ENV
+
+      # - name: Publish infrastructure Templates
+      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key projects/go/apigw-lambda/lambda-apigw-stack-template.yaml --body infrastructure/lambda-apigw-stack-template.yaml
+
+      # - name: Publish Zip to S3 - GET
+      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key projects/go/apigw-lambda/$UUID/handler_hello_get.zip --body handler_hello_get.zip
+
+      # - name: Publish Zip to S3 - POST
+      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key projects/go/apigw-lambda/$UUID/handler_hello_post.zip --body handler_hello_post.zip
+
+      # - name: Delete Stack
+      #   run: aws cloudformation delete-stack --stack-name go-apigw-lambda-stack
+
+      # - name: Wait For Delete Stack
+      #   run: aws cloudformation wait stack-delete-complete --stack-name go-apigw-lambda-stack
+
+      # - name: Run Cloudformation Deployment
+      #   run: aws cloudformation create-stack --stack-name go-apigw-lambda-stack --template-body file://infrastructure/stack.yaml --parameters ParameterKey=S3KeyPath,ParameterValue=$UUID
+
+      # - name: Wait For Create Stack
+      #   run: aws cloudformation wait stack-create-complete --stack-name go-apigw-lambda-stack
