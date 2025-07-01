@@ -20,15 +20,15 @@ jobs:
       - name: Display Go version
         run: go version
 
-      # - name: Configure AWS credentials
-      # uses: aws-actions/configure-aws-credentials@v4
-      # with:
-      #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # - name: Build handlers
-      # run: make build
+      - name: Build handlers
+        run: make build
 
-      # - name: Zip handlers
-      # run: make zip
+      - name: Zip handlers
+        run: make zip

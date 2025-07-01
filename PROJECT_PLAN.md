@@ -2,6 +2,7 @@
 
 ## Deliverables
 
-- Phase 1: Healh Check and testing
-- Phase 2: Email
-- Phase 3: Email with attachment
+- Phase 1: Health Check
+- Phase 2: Testing
+- Phase 3: Email
+- Phase 4: Email with attachment
