@@ -9,14 +9,14 @@ Parameters:
     Type: String
   HostedZoneId:
     Type: String
-    Description: "Route 53 Hosted Zone ID for the domain"
-    Default: "ZR2VAHLVW389H"
+    Description: "Route 53 Hosted Zone ID for the eandbsolutions domain"
+    Default: "Z2EUUDHNIV1GKR"
 
 Resources:
   ApiGateway:
     Type: "AWS::ApiGateway::RestApi"
     Properties:
-      Name: "email"
+      Name: "services-email"
 
   # Add a resource and then add any LambdaStack as needed per resource
   HealthApiGatewayResourceStack:
