@@ -11,7 +11,7 @@ import (
 func HealthGetHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	responseBody, err := json.Marshal(map[string]string{
-		"message": "The current time is" + time.Now().UTC().String(),
+		"message": "The current time is " + time.Now().UTC().String(),
 	})
 
 	if err != nil {
