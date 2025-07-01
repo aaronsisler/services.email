@@ -1,0 +1,4 @@
+github.com/aaronsisler/projects.go.apigw-lambda v0.0.0-20250607001648-ebf3d64cf16e h1:IMZ9IzZiFC+44n50bbaPCYp0E862wbVI5SWWFrcNpro=
+github.com/aaronsisler/projects.go.apigw-lambda v0.0.0-20250607001648-ebf3d64cf16e/go.mod h1:cjP5poJ3crybNgUcwVld97D0vvt6Vmuj+4haMjcsnVo=
+github.com/aws/aws-lambda-go v1.49.0 h1:z4VhTqkFZPM3xpEtTqWqRqsRH4TZBMJqTkRiBPYLqIQ=
+github.com/aws/aws-lambda-go v1.49.0/go.mod h1:dpMpZgvWx5vuQJfBt0zqBha60q7Dd7RfgJv23DymV8A=

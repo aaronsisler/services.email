@@ -1,0 +1,76 @@
+Description: API Gateway and lambda
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  TemplateFolder:
+    Type: String
+    Default: https://eb-solutions-code-deployment.s3.us-east-1.amazonaws.com/services/email
+  S3KeyPath:
+    Type: String
+  HostedZoneId:
+    Type: String
+    Description: "Route 53 Hosted Zone ID for the domain"
+    Default: "ZR2VAHLVW389H"
+
+Resources:
+  ApiGateway:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Name: "email"
+
+  # Add a resource and then add any LambdaStack as needed per resource
+  HealthApiGatewayResourceStack:
+    DependsOn: [ApiGateway]
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: "health"
+
+  HealthGetLambdaStack:
+    DependsOn: [ApiGateway]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "${TemplateFolder}/lambda-apigw-stack-template.yaml"
+      Parameters:
+        LambdaFunctionName: "services-email-health-get"
+        LambdaS3Key: !Sub "services/email/${S3KeyPath}/handler_health_get.zip"
+        LambdaRoleArn: arn:aws:iam::654918520080:role/services-email-role
+        LambdaPermissionSourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*
+        ApiGatewayId: !Ref ApiGateway
+        ApiGatewayResourceId: !Ref HealthApiGatewayResourceStack
+        ApiHttpMethod: GET
+        CostCenterTag: services.email
+
+  ApiGatewayDeployment:
+    DependsOn: [HealthGetLambdaStack]
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref ApiGateway
+      StageName: prod
+
+  DomainName:
+    Type: "AWS::ApiGateway::DomainName"
+    Properties:
+      # This is the *.eandbsolutions.com ACM Cert ARN
+      CertificateArn: arn:aws:acm:us-east-1:654918520080:certificate/24db7d13-c130-461d-9813-4acc2fffcf4a
+      DomainName: email.eandbsolutions.com
+
+  Mapping:
+    DependsOn: [ApiGateway, DomainName]
+    Type: "AWS::ApiGateway::BasePathMapping"
+    Properties:
+      DomainName: !Ref DomainName
+      RestApiId: !Ref ApiGateway
+      Stage: prod
+
+  ApiGwRoute53:
+    DependsOn: [DomainName]
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: email.eandbsolutions.com.
+      Type: A
+      AliasTarget:
+        HostedZoneId: !GetAtt DomainName.DistributionHostedZoneId
+        DNSName: !GetAtt DomainName.DistributionDomainName

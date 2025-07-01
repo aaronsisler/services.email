@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Reusable Lambda Function Template
+
+Parameters:
+  LambdaFunctionName:
+    Type: String
+  LambdaS3Key:
+    Type: String
+  LambdaRoleArn:
+    Type: String
+  LambdaPermissionSourceArn:
+    Type: String
+  ApiGatewayId:
+    Type: String
+  ApiGatewayResourceId:
+    Type: String
+  ApiHttpMethod:
+    Type: String
+  CostCenterTag:
+    Type: String
+
+Resources:
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Runtime: provided.al2023
+      Handler: bootstrap
+      MemorySize: 128
+      Code:
+        S3Bucket: "eb-solutions-code-deployment"
+        S3Key: !Ref LambdaS3Key
+      Role: !Ref LambdaRoleArn
+      Timeout: 60
+      Tags:
+        - Key: CostCenter
+          Value: !Ref CostCenterTag
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Ref LambdaPermissionSourceArn
+
+  ApiGatewayStackMethod:
+    DependsOn: [LambdaFunction]
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      RestApiId: !Ref ApiGatewayId
+      ResourceId: !Ref ApiGatewayResourceId
+      AuthorizationType: NONE
+      HttpMethod: !Ref ApiHttpMethod
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
