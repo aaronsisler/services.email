@@ -14,9 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [0.1.0] Creating and deploying the base application
+## [2.1.0] Creating and deploying the base email POST endpoint
+
+- Base email handler
+- GitHub Action, Makefile, and CF template changes to deploy to API Gateway
+
+## [1.0.0] Creating and deploying the base application
 
 ### Added
 
 - Base health handler
-- GitHub Action to deploy to API Gateway
+- GitHub Action, Makefile, and CF template changes to deploy to API Gateway
