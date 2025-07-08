@@ -35,6 +35,6 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 	// }
 
 	return events.APIGatewayProxyResponse{
-		StatusCode: 201,
+		StatusCode: 200,
 	}, nil
 }

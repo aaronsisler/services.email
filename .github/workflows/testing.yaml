@@ -2,7 +2,7 @@ name: Pull Request
 on:
   push:
     branches:
-      - feature/phase-2.1
+      - testing
 
 jobs:
   Publish-Lambda-To-Cloud:
