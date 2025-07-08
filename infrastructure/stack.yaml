@@ -28,7 +28,7 @@ Resources:
       PathPart: "health"
 
   HealthGetLambdaStack:
-    DependsOn: [ApiGateway]
+    DependsOn: [ApiGateway, HealthApiGatewayResourceStack]
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub "${TemplateFolder}/lambda-apigw-stack-template.yaml"
@@ -42,8 +42,31 @@ Resources:
         ApiHttpMethod: GET
         CostCenterTag: services.email
 
+  EmailApiGatewayResourceStack:
+    DependsOn: [ApiGateway]
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: "email"
+
+  EmailPostLambdaStack:
+    DependsOn: [ApiGateway, EmailApiGatewayResourceStack]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "${TemplateFolder}/lambda-apigw-stack-template.yaml"
+      Parameters:
+        LambdaFunctionName: "services-email-email-post"
+        LambdaS3Key: !Sub "services/email/${S3KeyPath}/handler_email_post.zip"
+        LambdaRoleArn: arn:aws:iam::654918520080:role/services-email-role
+        LambdaPermissionSourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*
+        ApiGatewayId: !Ref ApiGateway
+        ApiGatewayResourceId: !Ref EmailApiGatewayResourceStack
+        ApiHttpMethod: POST
+        CostCenterTag: services.email
+
   ApiGatewayDeployment:
-    DependsOn: [HealthGetLambdaStack]
+    DependsOn: [HealthGetLambdaStack, EmailPostLambdaStack]
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref ApiGateway
