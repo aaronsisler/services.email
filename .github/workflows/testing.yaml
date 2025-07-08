@@ -2,7 +2,7 @@ name: Pull Request
 on:
   push:
     branches:
-      - testing
+      - feature/phase-2.1
 
 jobs:
   Publish-Lambda-To-Cloud:
@@ -39,8 +39,11 @@ jobs:
       - name: Publish infrastructure Templates
         run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/lambda-apigw-stack-template.yaml --body infrastructure/lambda-apigw-stack-template.yaml
 
-      - name: Publish Zip to S3 - GET
+      - name: Publish Zip to S3 - HEALTH - GET
         run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_health_get.zip --body handler_health_get.zip
+
+      - name: Publish Zip to S3 - EMAIL - POST
+        run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_email_post.zip --body handler_email_post.zip
 
       - name: Delete Stack
         run: aws cloudformation delete-stack --stack-name services-email-stack

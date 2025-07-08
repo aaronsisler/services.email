@@ -6,14 +6,22 @@ GOARCH=amd64
 build-handler-health-get:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/handler_health_get/bootstrap ./cmd/health/get
 
+build-handler-email-post:
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/handler_email_post/bootstrap ./cmd/email/post
+
 # Ziping the handlers
 zip-handler-health-get:
 	zip handler_health_get.zip -j bin/handler_health_get/bootstrap
 
+zip-handler-email-post:
+	zip handler_email_post.zip -j bin/handler_email_post/bootstrap
+
 # Build all handlers
 build:
 	make build-handler-health-get
+	make build-handler-email-post
 
 # Zip all handlers
 zip:
 	make zip-handler-health-get
+	make zip-handler-email-post

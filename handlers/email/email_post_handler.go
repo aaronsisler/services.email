@@ -2,7 +2,6 @@ package email
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -26,14 +25,14 @@ type Email struct {
 }
 
 func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var email Email
+	// var email Email
 
 	// Unmarshal the JSON string in the body
-	err := json.Unmarshal([]byte(req.Body), &email)
+	// err := json.Unmarshal([]byte(req.Body), &email)
 
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
-	}
+	// if err != nil {
+	// 	return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid request body"}, nil
+	// }
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: 201,
