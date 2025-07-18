@@ -1,0 +1,66 @@
+#!/bin/bash
+set -e
+
+echo ">> Zipping Go bootstrap"
+cd /lambda && zip function.zip bootstrap
+
+echo "🚀 Registering Lambda function"
+
+API_NAME="services-email"
+LAMBDA_FUNCTION_NAME="services-email-email"
+API_PATH="email"
+# Must be all CAPS i.e. POST or GET
+API_HTTP="POST"
+
+awslocal lambda create-function \
+  --function-name "$LAMBDA_FUNCTION_NAME" \
+  --runtime provided.al2 \
+  --handler bootstrap \
+  --zip-file fileb://function.zip \
+  --role arn:aws:iam::000000000000:role/lambda-role
+
+
+awslocal apigateway create-rest-api --name "$API_NAME"
+
+API_ID=$(awslocal apigateway get-rest-apis \
+    --query "items[?name=='$API_NAME'].id" \
+    --output text)
+
+PARENT_ID=$(awslocal apigateway get-resources \
+    --rest-api-id "$API_ID" \
+    --query "items[0].id" \
+    --output text)
+
+
+awslocal apigateway create-resource \
+  --rest-api-id "$API_ID" \
+  --parent-id "$PARENT_ID" \
+  --path-part "$API_PATH"
+
+
+RESOURCE_ID=$(awslocal apigateway get-resources \
+    --rest-api-id "$API_ID" \
+    --query "items[?pathPart=='$API_PATH'].id" \
+    --output text)
+
+awslocal apigateway put-method \
+  --rest-api-id "$API_ID" \
+  --resource-id "$RESOURCE_ID" \
+  --http-method "$API_HTTP" \
+  --authorization-type "NONE"
+
+awslocal apigateway put-integration \
+  --rest-api-id "$API_ID" \
+  --resource-id "$RESOURCE_ID" \
+  --http-method "$API_HTTP" \
+  --type AWS_PROXY \
+  --integration-http-method POST \
+  --uri "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:$LAMBDA_FUNCTION_NAME/invocations"
+
+awslocal apigateway create-deployment \
+  --rest-api-id "$API_ID" \
+  --stage-name dev
+
+echo "✅ Lambda and API Gateway ready"
+echo "API_ID"
+echo "$API_ID"

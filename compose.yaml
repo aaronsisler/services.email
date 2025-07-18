@@ -1,0 +1,26 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: output
+    volumes:
+      - build_output:/out
+    command: ["sleep", "infinity"] # we just want it to build
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=lambda,apigateway,ecr
+      - DEBUG=1
+      - LAMBDA_EXECUTOR=docker-reuse
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - build_output:/lambda # This is where /out/bootstrap will land
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./localstack/init:/etc/localstack/init/ready.d"
+
+volumes:
+  build_output:
