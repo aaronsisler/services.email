@@ -1,16 +1,18 @@
 #!/bin/bash
 set -e
 
-echo ">> Zipping Go bootstrap"
-cd /lambda && zip function.zip bootstrap
-
-echo "🚀 Registering Lambda function"
-
 API_NAME="services-email"
+HANDLER_ZIP_NAME="handler_email_post.zip"
 LAMBDA_FUNCTION_NAME="services-email-email"
 API_PATH="email"
 # Must be all CAPS i.e. POST or GET
 API_HTTP="POST"
+
+echo ">> Renaming handler zip file"
+
+cp "/build_output/$HANDLER_ZIP_NAME" "function.zip"
+
+echo "🚀 Registering Lambda function"
 
 awslocal lambda create-function \
   --function-name "$LAMBDA_FUNCTION_NAME" \
