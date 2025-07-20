@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-
+BUILD_DIRECTORY="/build_output"
 API_NAME="services-email"
 HANDLER_ZIP_NAME="handler_email_post.zip"
 LAMBDA_FUNCTION_NAME="services-email-email"
@@ -8,9 +8,19 @@ API_PATH="email"
 # Must be all CAPS i.e. POST or GET
 API_HTTP="POST"
 
-echo ">> Renaming handler zip file"
 
-cp "/build_output/$HANDLER_ZIP_NAME" "function.zip"
+cd $BUILD_DIRECTORY
+echo ">> Building bootstrap"
+make build-handler-email-post
+
+echo ">> Changing the permissions on boostrap"
+chmod +x "$BUILD_DIRECTORY/bin/handler_email_post/bootstrap"
+
+echo ">> Zipping bootstrap"
+make zip-handler-email-post
+
+echo ">> Renaming handler zip file"
+cp "$BUILD_DIRECTORY/$HANDLER_ZIP_NAME" "function.zip"
 
 echo "🚀 Registering Lambda function"
 
@@ -18,7 +28,7 @@ awslocal lambda create-function \
   --function-name "$LAMBDA_FUNCTION_NAME" \
   --runtime provided.al2 \
   --handler bootstrap \
-  --zip-file fileb://function.zip \
+  --zip-file "fileb://$BUILD_DIRECTORY/function.zip" \
   --role arn:aws:iam::000000000000:role/lambda-role
 
 

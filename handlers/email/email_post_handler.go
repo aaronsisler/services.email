@@ -36,7 +36,7 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 	// }
 
 	responseBody, err := json.Marshal(map[string]string{
-		"message": "Handler: Email: POST: HELLO123!!",
+		"message": "Handler: Email: POST: HELLO1234!!",
 	})
 
 	if err != nil {
