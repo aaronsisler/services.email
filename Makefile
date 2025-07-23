@@ -21,6 +21,9 @@ build:
 	make build-handler-health-get
 	make build-handler-email-post
 
+test:
+	go test ./test/steps
+
 # Zip all handlers
 zip:
 	make zip-handler-health-get
