@@ -25,7 +25,7 @@ build:
 
 test:
 	go install github.com/cucumber/godog/cmd/godog@latest
-	cd test/steps && godog run
+	cd test/steps && go test
 
 # Zip all handlers
 zip:
