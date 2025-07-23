@@ -36,26 +36,26 @@ jobs:
       - name: Zip handlers
         run: make zip
 
-      # - name: Create Folder uuid
-      #   run: echo "UUID=$(uuidgen)" >> $GITHUB_ENV
+      - name: Create Folder uuid
+        run: echo "UUID=$(uuidgen)" >> $GITHUB_ENV
 
-      # - name: Publish infrastructure Templates
-      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/lambda-apigw-stack-template.yaml --body infrastructure/lambda-apigw-stack-template.yaml
+      - name: Publish infrastructure Templates
+        run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/lambda-apigw-stack-template.yaml --body infrastructure/lambda-apigw-stack-template.yaml
 
-      # - name: Publish Zip to S3 - HEALTH - GET
-      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_health_get.zip --body handler_health_get.zip
+      - name: Publish Zip to S3 - HEALTH - GET
+        run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_health_get.zip --body handler_health_get.zip
 
-      # - name: Publish Zip to S3 - EMAIL - POST
-      #   run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_email_post.zip --body handler_email_post.zip
+      - name: Publish Zip to S3 - EMAIL - POST
+        run: aws s3api put-object --bucket eb-solutions-code-deployment --key services/email/$UUID/handler_email_post.zip --body handler_email_post.zip
 
-      # - name: Delete Stack
-      #   run: aws cloudformation delete-stack --stack-name services-email-stack
+      - name: Delete Stack
+        run: aws cloudformation delete-stack --stack-name services-email-stack
 
-      # - name: Wait For Delete Stack
-      #   run: aws cloudformation wait stack-delete-complete --stack-name services-email-stack
+      - name: Wait For Delete Stack
+        run: aws cloudformation wait stack-delete-complete --stack-name services-email-stack
 
-      # - name: Run Cloudformation Deployment
-      #   run: aws cloudformation create-stack --stack-name services-email-stack --template-body file://infrastructure/stack.yaml --parameters ParameterKey=S3KeyPath,ParameterValue=$UUID
+      - name: Run Cloudformation Deployment
+        run: aws cloudformation create-stack --stack-name services-email-stack --template-body file://infrastructure/stack.yaml --parameters ParameterKey=S3KeyPath,ParameterValue=$UUID
 
-      # - name: Wait For Create Stack
-      #   run: aws cloudformation wait stack-create-complete --stack-name services-email-stack
+      - name: Wait For Create Stack
+        run: aws cloudformation wait stack-create-complete --stack-name services-email-stack
