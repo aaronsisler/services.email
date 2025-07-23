@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/aaronsisler/services.email/handlers/email"
@@ -18,7 +17,6 @@ var (
 	emailRequestBody string
 )
 
-// Step 1: Given
 func iHaveARequestWithTheMissingFromField() error {
 	emailRequestBody = `{
 		"header": {
@@ -29,7 +27,17 @@ func iHaveARequestWithTheMissingFromField() error {
 	return nil
 }
 
-// Step 2: When
+func iHaveARequestWithAllTheRequiredFields() error {
+	emailRequestBody = `{
+		"header": {
+			"subject": "Test Subject",
+			"to": "recipient@example.com",
+			"from": "sender@example.com"
+		}
+	}`
+	return nil
+}
+
 func iInvokeTheEmailLambdaHandler() error {
 	emailResponse, emailHandlerErr = email.EmailPostHandler(
 		context.Background(),
@@ -40,13 +48,7 @@ func iInvokeTheEmailLambdaHandler() error {
 	return emailHandlerErr
 }
 
-// Step 3: Then
-func theEmailResponseStatusCodeShouldBe(expectedStr string) error {
-	expected, err := strconv.Atoi(expectedStr)
-	if err != nil {
-		return fmt.Errorf("invalid expected status code: %s", expectedStr)
-	}
-
+func theEmailResponseStatusCodeShouldBe(expected int) error {
 	if emailResponse.StatusCode != expected {
 		return fmt.Errorf("expected status code %d, got %d", expected, emailResponse.StatusCode)
 	}
@@ -54,7 +56,6 @@ func theEmailResponseStatusCodeShouldBe(expectedStr string) error {
 	return nil
 }
 
-// Step 4: And
 func theEmailResponseBodyShouldContain(key string) error {
 	var body map[string]any
 	if err := json.Unmarshal([]byte(emailResponse.Body), &body); err != nil {
@@ -100,9 +101,10 @@ func theErrorShouldHaveTheCorrectFields() error {
 }
 
 func registerEmailSteps(ctx *godog.ScenarioContext) {
+	ctx.Step(`^I have a request with all the required fields$`, iHaveARequestWithAllTheRequiredFields)
 	ctx.Step(`^I have a request with the missing from field$`, iHaveARequestWithTheMissingFromField)
 	ctx.Step(`^I invoke the email Lambda handler$`, iInvokeTheEmailLambdaHandler)
-	ctx.Step(`^the response status code should be (\d+)$`, theEmailResponseStatusCodeShouldBe)
-	ctx.Step(`^the response body should contain "([^"]+)"$`, theEmailResponseBodyShouldContain)
+	ctx.Step(`^the email response status code should be (\d+)$`, theEmailResponseStatusCodeShouldBe)
+	ctx.Step(`^the email response body should contain "([^"]+)"$`, theEmailResponseBodyShouldContain)
 	ctx.Step(`^the "error" should have the correct fields$`, theErrorShouldHaveTheCorrectFields)
 }

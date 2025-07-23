@@ -42,6 +42,6 @@ func theHealthResponseBodyShouldContain(field string) error {
 // Export a register function instead
 func registerHealthSteps(ctx *godog.ScenarioContext) {
 	ctx.Step(`^I invoke the health check Lambda handler$`, iInvokeTheHealthCheckLambdaHandler)
-	ctx.Step(`^the response status code should be (\d+)$`, theHealthResponseStatusCodeShouldBe)
-	ctx.Step(`^the response body should contain "([^"]+)"$`, theHealthResponseBodyShouldContain)
+	ctx.Step(`^the health response status code should be (\d+)$`, theHealthResponseStatusCodeShouldBe)
+	ctx.Step(`^the health response body should contain "([^"]+)"$`, theHealthResponseBodyShouldContain)
 }
