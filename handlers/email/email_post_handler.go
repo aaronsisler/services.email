@@ -11,8 +11,6 @@ import (
 )
 
 func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Printf("Handler received body: %s\n", req.Body)
-
 	var email models.Email
 	err := json.Unmarshal([]byte(req.Body), &email)
 
@@ -22,6 +20,7 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 	}
 
 	validationErrors, err := validators.ValidateEmail(email)
+
 	if err != nil {
 		fmt.Println("Validation failed with error:", err)
 		return errorResponse(400, "Validation failed"), nil
@@ -40,7 +39,6 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 		}, nil
 	}
 
-	fmt.Println("Validation passed, returning 200")
 	responseBody, _ := json.Marshal(map[string]string{
 		"message": "Email received successfully!",
 	})
