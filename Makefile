@@ -1,3 +1,5 @@
+.PHONY: test
+
 # Set Go environment
 GOOS=linux
 GOARCH=amd64
