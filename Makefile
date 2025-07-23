@@ -22,7 +22,8 @@ build:
 	make build-handler-email-post
 
 test:
-	go test ./test/steps
+	go install github.com/cucumber/godog/cmd/godog@latest
+	cd test/steps && godog run
 
 # Zip all handlers
 zip:
