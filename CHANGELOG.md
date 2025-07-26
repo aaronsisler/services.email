@@ -14,7 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [2.2.0] Creating and deploying the base email POST endpoint
+
+### Added
+
+- Adding in the bad request validation for email handler
+- Adding in testing using Godog and feature files
+- Adding GHA and Makefile steps for running test
+
 ## [2.1.0] Creating and deploying the base email POST endpoint
+
+### Added
 
 - Base email handler
 - GitHub Action, Makefile, and CF template changes to deploy to API Gateway
