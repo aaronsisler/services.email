@@ -1,3 +1,5 @@
+.PHONY: test
+
 # Set Go environment
 GOOS=linux
 GOARCH=amd64
@@ -20,6 +22,10 @@ zip-handler-email-post:
 build:
 	make build-handler-health-get
 	make build-handler-email-post
+
+test:
+	go install github.com/cucumber/godog/cmd/godog@latest
+	cd test/steps && go test
 
 # Zip all handlers
 zip:
