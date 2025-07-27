@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/aaronsisler/services.email/models"
+	"github.com/aaronsisler/services.email/services"
 	"github.com/aaronsisler/services.email/validators"
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -37,6 +38,13 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 			Headers:    map[string]string{"Content-Type": "application/json"},
 			Body:       string(body),
 		}, nil
+	}
+
+	err = services.SendEmail()
+
+	if err != nil {
+		fmt.Println("services.SendEmail failed")
+		return errorResponse(500, "services.SendEmail failed"), nil
 	}
 
 	responseBody, _ := json.Marshal(map[string]string{
