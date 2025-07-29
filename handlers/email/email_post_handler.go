@@ -40,7 +40,7 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 		}, nil
 	}
 
-	err = services.SendEmail()
+	err = services.SendEmail(email)
 
 	if err != nil {
 		fmt.Println("services.SendEmail failed")
