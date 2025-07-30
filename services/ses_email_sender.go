@@ -1,4 +1,3 @@
-// services/ses_email_sender.go
 package services
 
 import (

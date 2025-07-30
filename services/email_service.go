@@ -54,7 +54,7 @@ func SendEmail(email models.Email) error {
 		return err
 	}
 
-	// If it was successful, log what the message id from AWS was
+	// If it was successful, log the message id from AWS
 	fmt.Println("Result MessageId")
 	fmt.Println(result.MessageId)
 

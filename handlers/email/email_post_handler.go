@@ -1,4 +1,3 @@
-// email/email_post_handler.go
 package email
 
 import (
