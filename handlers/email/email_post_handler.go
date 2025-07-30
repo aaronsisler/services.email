@@ -1,3 +1,4 @@
+// email/email_post_handler.go
 package email
 
 import (
@@ -11,7 +12,11 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+type EmailHandler struct {
+	Sender services.EmailSender
+}
+
+func (h *EmailHandler) EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var email models.Email
 	err := json.Unmarshal([]byte(req.Body), &email)
 
@@ -40,10 +45,9 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 		}, nil
 	}
 
-	err = services.SendEmail(email)
-
+	err = h.Sender.SendEmail(email)
 	if err != nil {
-		fmt.Println("services.SendEmail failed")
+		fmt.Println("services.SendEmail failed:", err)
 		return errorResponse(500, "services.SendEmail failed"), nil
 	}
 

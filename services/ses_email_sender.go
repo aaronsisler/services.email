@@ -1,3 +1,4 @@
+// services/ses_email_sender.go
 package services
 
 import (
@@ -9,22 +10,27 @@ import (
 	"github.com/aws/aws-sdk-go/service/ses"
 )
 
-func SendEmail(email models.Email) error {
-	// Create a new session in your desired region.
+type SESEmailSender struct {
+	sesClient *ses.SES
+}
+
+func NewSESEmailSender(region string) (*SESEmailSender, error) {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region: aws.String(region),
 	})
 
 	if err != nil {
-		fmt.Println("err from session creation")
-		fmt.Println(err)
-		return err
+		return nil, fmt.Errorf("failed to create AWS session: %w", err)
 	}
 
-	svc := ses.New(sess)
+	return &SESEmailSender{
+		sesClient: ses.New(sess),
+	}, nil
+}
 
-	// Set the inputs of the email
+func (s *SESEmailSender) SendEmail(email models.Email) error {
 	charSet := "UTF-8"
+
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			ToAddresses: aws.StringSlice([]string{email.Header.To}),
@@ -44,19 +50,12 @@ func SendEmail(email models.Email) error {
 		Source: aws.String(email.Header.From),
 	}
 
-	// Try to send the email
-	result, err := svc.SendEmail(input)
-
-	// If sending failed, log what failed
+	result, err := s.sesClient.SendEmail(input)
 	if err != nil {
-		fmt.Println("err from svc.SendEmail")
-		fmt.Println(err)
+		fmt.Println("SES send failed:", err)
 		return err
 	}
 
-	// If it was successful, log what the message id from AWS was
-	fmt.Println("Result MessageId")
-	fmt.Println(result.MessageId)
-
+	fmt.Println("SES send success:", *result.MessageId)
 	return nil
 }

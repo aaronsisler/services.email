@@ -30,8 +30,8 @@ jobs:
       - name: Build handlers
         run: make build
 
-      # - name: Test handlers
-      # run: make test
+      - name: Test handlers
+        run: make test
 
       - name: Zip handlers
         run: make zip

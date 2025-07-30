@@ -11,3 +11,5 @@ Feature: Email endpoint
     Given I have a request with all the required fields
     When I invoke the email Lambda handler
     Then the email response status code should be 200
+    And the email response body should contain "message"
+    And the email sender should be called
