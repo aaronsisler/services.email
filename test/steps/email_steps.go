@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aaronsisler/services.email/handlers/email"
+	"github.com/aaronsisler/services.email/test/mocks"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/cucumber/godog"
 )
@@ -15,6 +16,9 @@ var (
 	emailResponse    events.APIGatewayProxyResponse
 	emailHandlerErr  error
 	emailRequestBody string
+
+	mockSender   *mocks.MockEmailSender
+	emailHandler *email.EmailHandler
 )
 
 func iHaveARequestWithTheMissingFromField() error {
@@ -33,13 +37,14 @@ func iHaveARequestWithAllTheRequiredFields() error {
 			"subject": "Test Subject",
 			"to": "recipient@example.com",
 			"from": "sender@example.com"
-		}
+		},
+		"body": "Hello!"
 	}`
 	return nil
 }
 
 func iInvokeTheEmailLambdaHandler() error {
-	emailResponse, emailHandlerErr = email.EmailPostHandler(
+	emailResponse, emailHandlerErr = emailHandler.EmailPostHandler(
 		context.Background(),
 		events.APIGatewayProxyRequest{
 			Body: emailRequestBody,
@@ -52,7 +57,6 @@ func theEmailResponseStatusCodeShouldBe(expected int) error {
 	if emailResponse.StatusCode != expected {
 		return fmt.Errorf("expected status code %d, got %d", expected, emailResponse.StatusCode)
 	}
-
 	return nil
 }
 
@@ -75,7 +79,6 @@ func theErrorShouldHaveTheCorrectFields() error {
 	}
 
 	errors, ok := body["errors"].([]any)
-
 	if !ok {
 		return fmt.Errorf("'errors' field is not an array")
 	}
@@ -100,11 +103,29 @@ func theErrorShouldHaveTheCorrectFields() error {
 	return nil
 }
 
+func theEmailSenderShouldBeCalled() error {
+	if !mockSender.WasCalled {
+		return fmt.Errorf("expected SendEmail to be called")
+	}
+	return nil
+}
+
 func registerEmailSteps(ctx *godog.ScenarioContext) {
+	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
+		// Set up mock and inject into handler
+		mockSender = &mocks.MockEmailSender{}
+		emailHandler = &email.EmailHandler{
+			Sender: mockSender,
+		}
+		return ctx, nil
+	})
+
 	ctx.Step(`^I have a request with all the required fields$`, iHaveARequestWithAllTheRequiredFields)
 	ctx.Step(`^I have a request with the missing from field$`, iHaveARequestWithTheMissingFromField)
 	ctx.Step(`^I invoke the email Lambda handler$`, iInvokeTheEmailLambdaHandler)
 	ctx.Step(`^the email response status code should be (\d+)$`, theEmailResponseStatusCodeShouldBe)
 	ctx.Step(`^the email response body should contain "([^"]+)"$`, theEmailResponseBodyShouldContain)
 	ctx.Step(`^the "error" should have the correct fields$`, theErrorShouldHaveTheCorrectFields)
+	ctx.Step(`^the email sender should be called$`, theEmailSenderShouldBeCalled)
+
 }

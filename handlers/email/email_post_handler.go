@@ -6,11 +6,16 @@ import (
 	"fmt"
 
 	"github.com/aaronsisler/services.email/models"
+	"github.com/aaronsisler/services.email/services"
 	"github.com/aaronsisler/services.email/validators"
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+type EmailHandler struct {
+	Sender services.EmailSender
+}
+
+func (h *EmailHandler) EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var email models.Email
 	err := json.Unmarshal([]byte(req.Body), &email)
 
@@ -37,6 +42,12 @@ func EmailPostHandler(ctx context.Context, req events.APIGatewayProxyRequest) (e
 			Headers:    map[string]string{"Content-Type": "application/json"},
 			Body:       string(body),
 		}, nil
+	}
+
+	err = h.Sender.SendEmail(email)
+	if err != nil {
+		fmt.Println("services.SendEmail failed:", err)
+		return errorResponse(500, "services.SendEmail failed"), nil
 	}
 
 	responseBody, _ := json.Marshal(map[string]string{
