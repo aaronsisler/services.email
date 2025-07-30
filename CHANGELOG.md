@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [2.3.0] Adding in the email service for request body parsing
+
+### Added
+
+- Default email service added through dependency injection
+- Updating test cases to handle this DI process
+
 ## [2.2.0] Creating and deploying the base email POST endpoint
 
 ### Added
